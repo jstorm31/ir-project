@@ -17,6 +17,7 @@ public class Main {
     }
 
     public static void buildIndex() {
+        System.out.println("Building index...");
         try {
             IndexBuilder builder = new IndexBuilder(indexDirPath);
             builder.build(docDirPath);
@@ -36,12 +37,13 @@ public class Main {
                 System.out.println("\nEnter query:");
 
                 String query = command.nextLine();
-                TopDocs foundDocs = searcher.search(query);
+                TopDocs foundDocs = searcher.search(query, 5);
 
-                System.out.println("\nFound documents: " + foundDocs.totalHits);
+                System.out.println("\nFound documents: " + foundDocs.totalHits.value);
+                System.out.println("Top 5 results:");
                 for (ScoreDoc sd : foundDocs.scoreDocs) {
                     Document d = searcher.searcher.doc(sd.doc);
-                    System.out.println(String.format(d.get("name")) + ": \"" + String.format(d.get("questionTitle")) + "\"");
+                    System.out.println(String.format(d.get("name")) + ": \"" + String.format(d.get("title")) + "\"");
                 }
             }
 

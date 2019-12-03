@@ -59,19 +59,19 @@ public class IndexBuilder {
         StackOverflowDocument soDocument = new StackOverflowDocument(file);
         Document document = new Document();
 
-        // Name
-        document.add(new StringField("name", soDocument.getName(), Field.Store.YES));
+        // Meta fields
+        String noSuffixName = soDocument.getName().substring(0, soDocument.getName().length() - 4); // Remove '.xml' suffix
+        document.add(new StringField("name", noSuffixName, Field.Store.YES));
+        document.add(new TextField("title", soDocument.getTitle(), Field.Store.YES));
+        document.add(new TextField("tags", soDocument.getTags(), Field.Store.YES));
 
-        // Question fields
-        document.add(new TextField("questionTitle", soDocument.getTitle(), Field.Store.YES));
-        document.add(new TextField("questionBody", soDocument.getQuestionBody(), Field.Store.NO));
-        document.add(new TextField("questionTags", soDocument.getTags(), Field.Store.YES));
-
-        // Answers fields
+        // Content
+        String content = soDocument.getTitle() + "\n" + soDocument.getTags() + "\n" + soDocument.getQuestionBody();
         for (int i = 0; i < soDocument.getAnswers().size(); i++) {
             String answer = soDocument.getAnswers().get(i);
-            document.add(new TextField("answer_" + i, answer, Field.Store.NO));
+            content += "\n" + answer;
         }
+        document.add(new TextField("content", content, Field.Store.NO));
 
         return document;
     }

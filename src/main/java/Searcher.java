@@ -21,10 +21,19 @@ public class Searcher {
         searcher = new IndexSearcher(reader);
     }
 
-    public TopDocs search(String text) throws ParseException, IOException {
-        QueryParser qp = new QueryParser("questionTitle", new StandardAnalyzer());
+    /**
+     * Searches given query over indexed document content and returns top n results
+     *
+     * @param text searched query
+     * @param n    top results to search
+     * @return top results
+     * @throws ParseException
+     * @throws IOException
+     */
+    public TopDocs search(String text, Integer n) throws ParseException, IOException {
+        QueryParser qp = new QueryParser("content", new StandardAnalyzer());
         Query titleQuery = qp.parse(text);
-        TopDocs hits = searcher.search(titleQuery, 3);
+        TopDocs hits = searcher.search(titleQuery, n);
         return hits;
     }
 }
