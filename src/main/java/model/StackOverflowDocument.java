@@ -16,48 +16,18 @@ import java.util.Collections;
 import java.util.List;
 
 public class StackOverflowDocument {
+    String name;
     String title;
     String questionBody;
     String tags;
     List<String> answers = new ArrayList<String>();
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getQuestionBody() {
-        return questionBody;
-    }
-
-    public void setQuestionBody(String questionBody) {
-        this.questionBody = questionBody;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public List<String> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<String> answers) {
-        this.answers = answers;
-    }
 
     /**
      * Create from XML file
      * @param xmlFile XML file to be parsed
      */
     public StackOverflowDocument(File xmlFile) throws DocumentParsingException {
+        name = xmlFile.getName();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         Document doc = null;
@@ -92,6 +62,46 @@ public class StackOverflowDocument {
                 this.answers.add(body);
             }
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getQuestionBody() {
+        return questionBody;
+    }
+
+    public void setQuestionBody(String questionBody) {
+        this.questionBody = questionBody;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public List<String> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<String> answers) {
+        this.answers = answers;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     private InputStream wrapWithRoot(File xmlFile) throws FileNotFoundException {

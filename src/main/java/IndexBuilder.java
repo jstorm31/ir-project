@@ -8,6 +8,7 @@ import model.StackOverflowDocument;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -57,6 +58,9 @@ public class IndexBuilder {
     private Document createDocument(File file) throws DocumentParsingException {
         StackOverflowDocument soDocument = new StackOverflowDocument(file);
         Document document = new Document();
+
+        // Name
+        document.add(new StringField("name", soDocument.getName(), Field.Store.YES));
 
         // Question fields
         document.add(new TextField("questionTitle", soDocument.getTitle(), Field.Store.YES));
