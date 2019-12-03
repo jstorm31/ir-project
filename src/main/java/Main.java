@@ -1,24 +1,16 @@
-import model.DocumentParsingException;
-import model.StackOverflowDocument;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class Main {
 
+    static String indexDirPath = "/Users/jstorm31/Downloads/stackoverflow/index";
     static String docDirPath = "/Users/jstorm31/Downloads/stackoverflow";
 
     public static void main(String[] args) {
-        File dir = new File(docDirPath);
-        File[] files = dir.listFiles(new XmlFileFilter());
-        List<StackOverflowDocument> documents = new ArrayList<StackOverflowDocument>();
-
         try {
-            for (File file: files) {
-                documents.add(new StackOverflowDocument(file));
-            }
-        } catch (DocumentParsingException e) {
+            IndexBuilder builder = new IndexBuilder(indexDirPath);
+            builder.build(docDirPath);
+            System.out.println("Index has been successfully built");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
