@@ -3,13 +3,14 @@ package model;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,7 @@ public class StackOverflowDocument {
     String title;
     String questionBody;
     String tags;
-    List<String> answers;
+    List<String> answers = new ArrayList<String>();
 
     public String getTitle() {
         return title;
@@ -82,7 +83,15 @@ public class StackOverflowDocument {
         }
 
         // Parse answers
-        // TODO
+        NodeList answers = doc.getElementsByTagName("answer");
+        for (int i = 0; i < answers.getLength(); i++) {
+            Node answer = answers.item(i);
+            if (answer.getNodeType() == Node.ELEMENT_NODE) {
+                Element answerElem = (Element) answer;
+                String body = answerElem.getElementsByTagName("Body").item(0).getTextContent();
+                this.answers.add(body);
+            }
+        }
     }
 
     private InputStream wrapWithRoot(File xmlFile) throws FileNotFoundException {
