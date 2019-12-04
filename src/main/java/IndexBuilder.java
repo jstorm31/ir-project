@@ -5,7 +5,8 @@
 
 import model.DocumentParsingException;
 import model.StackOverflowDocument;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -25,8 +26,9 @@ public class IndexBuilder {
     private IndexWriter writer;
 
     public IndexBuilder(String indexDirectoryPath) throws IOException {
+        Analyzer analyzer = new EnglishAnalyzer();
         Directory indexDirectory = FSDirectory.open(Paths.get(indexDirectoryPath));
-        IndexWriterConfig writerConfig = new IndexWriterConfig(new StandardAnalyzer());
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         writer = new IndexWriter(indexDirectory, writerConfig);
     }
 
@@ -36,6 +38,7 @@ public class IndexBuilder {
      * @param srcDir
      */
     public void build(String srcDir) {
+        long startTime = System.currentTimeMillis();
         File dir = new File(srcDir);
         File[] files = dir.listFiles(new XmlFileFilter());
         List<Document> documents = new ArrayList();
@@ -53,6 +56,10 @@ public class IndexBuilder {
         } catch (DocumentParsingException | IOException e) {
             e.printStackTrace();
         }
+
+        long stopTime = System.currentTimeMillis();
+        long duration = stopTime - startTime;
+        System.out.println("Built index in " + duration / 1000.0 + "s");
     }
 
     private Document createDocument(File file) throws DocumentParsingException {
