@@ -24,11 +24,16 @@ import java.util.List;
 
 public class IndexBuilder {
     private IndexWriter writer;
+    static private Double BUFFER_SIZE = 512.0;
 
     public IndexBuilder(String indexDirectoryPath) throws IOException {
         Analyzer analyzer = new EnglishAnalyzer();
         Directory indexDirectory = FSDirectory.open(Paths.get(indexDirectoryPath));
+
+        // Config
         IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
+        writerConfig.setRAMBufferSizeMB(BUFFER_SIZE);
+
         writer = new IndexWriter(indexDirectory, writerConfig);
     }
 
