@@ -1,8 +1,3 @@
-/* Sources:
- - https://www.tutorialspoint.com/lucene/lucene_first_application.htm
- - https://howtodoinjava.com/lucene/lucene-index-search-examples/
-*/
-
 import model.DocumentParsingException;
 import model.StackOverflowDocument;
 import org.apache.lucene.analysis.Analyzer;
