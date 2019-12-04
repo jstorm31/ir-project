@@ -18,12 +18,11 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.*;
 
 public class IndexBuilder {
     private IndexWriter writer;
+
     static private Double BUFFER_SIZE = 512.0;
 
     public IndexBuilder(String indexDirectoryPath) throws IOException {
@@ -42,25 +41,31 @@ public class IndexBuilder {
      *
      * @param srcDir
      */
-    public void build(String srcDir) {
+    public void build(String srcDir) throws IOException {
         long startTime = System.currentTimeMillis();
-        File dir = new File(srcDir);
-        File[] files = dir.listFiles(new XmlFileFilter());
-        List<Document> documents = new ArrayList();
 
-        try {
-            for (File file : files) {
-                documents.add(createDocument(file));
+        // Load XML files
+        Path dir = FileSystems.getDefault().getPath(srcDir);
+        DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.xml");
+
+        // Delete previous index
+        writer.deleteAll();
+
+        // Build index
+        for (Path path : stream) {
+            Document doc = null;
+            try {
+                doc = createDocument(path.toFile());
+                writer.addDocument(doc);
+            } catch (DocumentParsingException | IOException e) {
+                System.out.println("Problem adding document " + doc.getField("name") + ".xml - it hasn't been added");
             }
-
-            // Build an index from documents
-            writer.deleteAll();
-            writer.addDocuments(documents);
-            writer.commit();
-            writer.close();
-        } catch (DocumentParsingException | IOException e) {
-            e.printStackTrace();
         }
+
+        // Commit and clean
+        writer.commit();
+        writer.close();
+        stream.close();
 
         long stopTime = System.currentTimeMillis();
         long duration = stopTime - startTime;
