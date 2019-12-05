@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 public class Main {
 
-    static String indexDirPath = "/Users/jstorm31/Downloads/stackoverflow/index";
-    static String docDirPath = "/Users/jstorm31/Downloads/stackoverflow";
+    static String indexDirPath = "/Volumes/jiri_drive/stackoverflow_index";
+    static String docDirPath = "/Volumes/jiri_drive/stackoverflow_xs";
 
     public static void main(String[] args) {
         buildIndex();
@@ -35,11 +35,15 @@ public class Main {
 
             while (true) {
                 System.out.println("\nEnter query:");
+                long startTime = System.currentTimeMillis();
 
                 String query = command.nextLine();
                 TopDocs foundDocs = searcher.search(query, 5);
 
-                System.out.println("\nFound documents: " + foundDocs.totalHits.value);
+                long stopTime = System.currentTimeMillis();
+                long duration = stopTime - startTime;
+
+                System.out.println("\nFound " + foundDocs.totalHits.value + " documents in " + duration + " ms ");
                 System.out.println("Top 5 results:");
                 for (ScoreDoc sd : foundDocs.scoreDocs) {
                     Document d = searcher.searcher.doc(sd.doc);

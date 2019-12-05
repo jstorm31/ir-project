@@ -1,7 +1,9 @@
 import model.DocumentParsingException;
 import model.StackOverflowDocument;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -18,7 +20,7 @@ import java.nio.file.*;
 public class IndexBuilder {
     private IndexWriter writer;
 
-    static private Double BUFFER_SIZE = 512.0;
+    static private Double BUFFER_SIZE = 128.0;
 
     public IndexBuilder(String indexDirectoryPath) throws IOException {
         Analyzer analyzer = new EnglishAnalyzer();
@@ -38,6 +40,7 @@ public class IndexBuilder {
      */
     public void build(String srcDir) throws IOException {
         long startTime = System.currentTimeMillis();
+        int i = 1;
 
         // Load XML files
         Path dir = FileSystems.getDefault().getPath(srcDir);
@@ -45,6 +48,7 @@ public class IndexBuilder {
 
         // Delete previous index
         writer.deleteAll();
+        System.out.println("Deleted old index");
 
         // Build index
         for (Path path : stream) {
@@ -55,6 +59,11 @@ public class IndexBuilder {
             } catch (DocumentParsingException | IOException e) {
                 System.out.println("Problem adding document " + doc.getField("name") + ".xml - it hasn't been added");
             }
+
+            if (i % 10000 == 0) {
+                System.out.println("Indexed " + String.format("%,d", i) + " files...");
+            }
+            i++;
         }
 
         // Commit and clean
