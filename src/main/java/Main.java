@@ -12,7 +12,14 @@ public class Main {
     static String docDirPath = "/Volumes/jiri_drive/stackoverflow_xs";
 
     public static void main(String[] args) {
-        buildIndex();
+        Scanner command = new Scanner(System.in);
+
+        System.out.println("Do you wish to build the index? [y/n]");
+        String buildIndex = command.nextLine();
+
+        if (buildIndex == "y") {
+            buildIndex();
+        }
         search();
     }
 
