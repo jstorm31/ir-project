@@ -1,5 +1,6 @@
 package model;
 
+import org.unbescape.html.HtmlEscape;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,6 +48,7 @@ public class StackOverflowDocument {
             Node a = questionElem.getElementsByTagName("Title").item(0);
             title = questionElem.getElementsByTagName("Title").item(0).getTextContent();
             questionBody = questionElem.getElementsByTagName("Body").item(0).getTextContent();
+            questionBody = HtmlEscape.unescapeHtml(questionBody);
             tags = questionElem.getElementsByTagName("Tags").item(0).getTextContent();
         } else {
             throw new DocumentParsingException("Could not parse question tag");
@@ -59,7 +61,7 @@ public class StackOverflowDocument {
             if (answer.getNodeType() == Node.ELEMENT_NODE) {
                 Element answerElem = (Element) answer;
                 String body = answerElem.getElementsByTagName("Body").item(0).getTextContent();
-                this.answers.add(body);
+                this.answers.add(HtmlEscape.unescapeHtml(body));
             }
         }
     }
