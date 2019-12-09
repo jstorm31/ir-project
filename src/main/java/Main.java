@@ -17,7 +17,7 @@ public class Main {
         System.out.println("Do you wish to build the index? [y/n]");
         String buildIndex = command.nextLine();
 
-        if (buildIndex == "y") {
+        if (buildIndex.equalsIgnoreCase("y")) {
             buildIndex();
         }
         search();
