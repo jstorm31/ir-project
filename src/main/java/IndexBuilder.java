@@ -1,15 +1,15 @@
 import model.DocumentParsingException;
 import model.StackOverflowDocument;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -23,15 +23,21 @@ public class IndexBuilder {
     static private Double BUFFER_SIZE = 128.0;
 
     public IndexBuilder(String indexDirectoryPath) throws IOException {
+        this(indexDirectoryPath, new BM25Similarity());
+    }
+
+    public IndexBuilder(String indexDirectoryPath, Similarity similarity) throws IOException {
         Analyzer analyzer = new EnglishAnalyzer();
         Directory indexDirectory = FSDirectory.open(Paths.get(indexDirectoryPath));
 
         // Config
         IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         writerConfig.setRAMBufferSizeMB(BUFFER_SIZE);
+        writerConfig.setSimilarity(similarity);
 
         writer = new IndexWriter(indexDirectory, writerConfig);
     }
+
 
     /**
      * Builds an index from XML documents in a specified directory

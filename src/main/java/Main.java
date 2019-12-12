@@ -8,16 +8,21 @@ import java.util.Scanner;
 
 public class Main {
 
-    static String indexDirPath = "/Volumes/jiri_drive/stackoverflow_index";
-    static String docDirPath = "/Volumes/jiri_drive/stackoverflow_xs";
+//    static String indexDirPath = "/Volumes/jiri_drive/stackoverflow_index";
+//    static String docDirPath = "/Volumes/jiri_drive/stackoverflow_xs";
+
+    static String indexDirPath = "/var/run/media/iasoon/Elements/stackoverflow_index";
+    static String docDirPath = "/var/run/media/iasoon/Elements/posts_reduced";
+
 
     public static void main(String[] args) {
         Scanner command = new Scanner(System.in);
 
         System.out.println("Do you wish to build the index? [y/n]");
-        String buildIndex = command.nextLine();
+        String buildIndex = command.nextLine().trim();
+        System.out.println(buildIndex);
 
-        if (buildIndex == "y") {
+        if (buildIndex.equals("y")) {
             buildIndex();
         }
         search();
