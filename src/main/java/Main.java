@@ -1,5 +1,7 @@
+import model.SearchResult;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
@@ -38,7 +40,7 @@ public class Main {
         Scanner command = new Scanner(System.in);
 
         try {
-            RocchioSearcher searcher = new RocchioSearcher(indexDirPath);
+            RocchioSearcher searcher = new RocchioSearcher(indexDirPath, 1, 1);
 
             while (true) {
                 System.out.println("\nEnter query:");
@@ -46,24 +48,25 @@ public class Main {
 
                 String query = command.nextLine();
 
-                TopDocs foundDocs = searcher.search(query, 5);
-                TopDocs pseudoFeedbackDocs = searcher.expandQuery(query, 5, 5);
+                SearchResult searchResult = searcher.search(query, 5);
+                SearchResult pseudoFeedbackSearchResult = searcher.expandQuery(query, 5, query.split("\\s+").length);
 
                 long stopTime = System.currentTimeMillis();
                 long duration = stopTime - startTime;
 
-                System.out.println("\nFound " + foundDocs.totalHits.value + " documents in " + duration + " ms ");
+                System.out.println("\nFound " + searchResult.docs.totalHits.value + " documents in " + duration + " ms ");
                 System.out.println("Top 5 results:");
-                for (ScoreDoc sd : foundDocs.scoreDocs) {
-                    sd.
+                for (ScoreDoc sd : searchResult.docs.scoreDocs) {
                     Document d = searcher.searcher.doc(sd.doc);
-                    System.out.println(String.format(d.get("name")) + ": \"" + String.format(d.get("title")) + "\"");
+                    System.out.println(String.format(d.get("name")) + "(" + sd.score + "): " + String.format(d.get("title")) + "\"");
                 }
 
                 System.out.println("\nTop 5 results with Rocchio relevant feedback:");
-                for (ScoreDoc sd : pseudoFeedbackDocs.scoreDocs) {
+                for (ScoreDoc sd : pseudoFeedbackSearchResult.docs.scoreDocs) {
                     Document d = searcher.searcher.doc(sd.doc);
-                    System.out.println(String.format(d.get("name")) + ": \"" + String.format(d.get("title")) + "\"");
+                    Explanation explanation = searcher.searcher.explain(searchResult.query, sd.doc);
+                    System.out.println(String.format(d.get("name")) + "(" + sd.score + "): " + String.format(d.get("title")) + "\"");
+                    //System.out.println("Explanation: " + explanation.toString());
                 }
             }
 

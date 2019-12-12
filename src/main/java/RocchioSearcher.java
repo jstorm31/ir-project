@@ -5,9 +5,11 @@
 
 import java.io.IOException;
 
+import model.SearchResult;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -15,6 +17,8 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import helper.FeatureVector;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 
 public class RocchioSearcher extends Searcher {
 
@@ -43,20 +47,18 @@ public class RocchioSearcher extends Searcher {
         this.b = b;
     }
 
-    public TopDocs expandQuery(String text, int fbDocs, int fbTerms) throws IOException, ParseException {
-        TopDocs initialResults = search(text, fbDocs);
+    public SearchResult expandQuery(String text, int fbDocs, int fbTerms) throws IOException, ParseException {
+        TopDocs initialResults = search(text, fbDocs).docs;
 
         FeatureVector summedTermVec = new FeatureVector(null);
 
         for (ScoreDoc doc : initialResults.scoreDocs) {
-            StringBuffer docText = new StringBuffer();
-            for (String chunk : searcher.doc(doc.doc).getValues("content")) {
-                docText.append(chunk);
-            }
+            Document document = searcher.doc(doc.doc);
+            String docText = document.getField("content").stringValue();
 
             // Get the document tokens and add to the doc vector
             FeatureVector docVec = new FeatureVector(null);
-            parseText(docText.toString(), docVec);
+            parseText(docText, docVec);
 
             // Compute the BM25 weights
             computeBM25Weights(searcher, docVec, summedTermVec);
@@ -66,7 +68,8 @@ public class RocchioSearcher extends Searcher {
         FeatureVector relDocTermVec = new FeatureVector(null);
 
         for (String term : summedTermVec.getFeatures()) {
-            relDocTermVec.addTerm(term, summedTermVec.getFeatureWeight(term) * beta / fbDocs);
+            double weight = summedTermVec.getFeatureWeight(term);
+            relDocTermVec.addTerm(term, weight * beta / fbDocs);
         }
 
         // Create a query vector and scale by alpha
@@ -119,7 +122,9 @@ public class RocchioSearcher extends Searcher {
             double idf = Math.log( (docCount + 1) / (docOccur + 0.5) ); // following Indri
             double tf = docVec.getFeatureWeight(term);
 
+            // TODO: replace this with same scoring model as normal search without feedback
             double weight = (idf * k1 * tf) / (tf + k1 * (1 - b + b * docVec.getLength() / avgDocLen));
+            //System.out.println("Weight: " + weight);
             summedTermVec.addTerm(term, weight);
         }
     }

@@ -98,7 +98,7 @@ public class IndexBuilder {
             String answer = soDocument.getAnswers().get(i);
             content += "\n" + answer;
         }
-        document.add(new TextField("content", content, Field.Store.NO));
+        document.add(new TextField("content", content, Field.Store.YES));
 
         return document;
     }
