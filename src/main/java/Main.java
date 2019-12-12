@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 public class Main {
 
-    static String indexDirPath = "/Volumes/jiri_drive/stackoverflow_index";
-    static String docDirPath = "/Volumes/jiri_drive/stackoverflow_xs";
+    static String indexDirPath = "/Users/jstorm31/stackoverflow_index";
+    static String docDirPath = "/Users/jstorm31/stackoverflow_xs";
 
     public static void main(String[] args) {
         Scanner command = new Scanner(System.in);
@@ -38,14 +38,16 @@ public class Main {
         Scanner command = new Scanner(System.in);
 
         try {
-            Searcher searcher = new Searcher(indexDirPath);
+            RocchioSearcher searcher = new RocchioSearcher(indexDirPath);
 
             while (true) {
                 System.out.println("\nEnter query:");
                 long startTime = System.currentTimeMillis();
 
                 String query = command.nextLine();
+
                 TopDocs foundDocs = searcher.search(query, 5);
+                TopDocs pseudoFeedbackDocs = searcher.expandQuery(query, 5, 5);
 
                 long stopTime = System.currentTimeMillis();
                 long duration = stopTime - startTime;
@@ -53,6 +55,13 @@ public class Main {
                 System.out.println("\nFound " + foundDocs.totalHits.value + " documents in " + duration + " ms ");
                 System.out.println("Top 5 results:");
                 for (ScoreDoc sd : foundDocs.scoreDocs) {
+                    sd.
+                    Document d = searcher.searcher.doc(sd.doc);
+                    System.out.println(String.format(d.get("name")) + ": \"" + String.format(d.get("title")) + "\"");
+                }
+
+                System.out.println("\nTop 5 results with Rocchio relevant feedback:");
+                for (ScoreDoc sd : pseudoFeedbackDocs.scoreDocs) {
                     Document d = searcher.searcher.doc(sd.doc);
                     System.out.println(String.format(d.get("name")) + ": \"" + String.format(d.get("title")) + "\"");
                 }

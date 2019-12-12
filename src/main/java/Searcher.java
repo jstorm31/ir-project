@@ -1,3 +1,4 @@
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -31,7 +32,7 @@ public class Searcher {
      * @throws IOException
      */
     public TopDocs search(String text, Integer n) throws ParseException, IOException {
-        QueryParser qp = new QueryParser("content", new StandardAnalyzer());
+        QueryParser qp = new QueryParser("content", new EnglishAnalyzer());
         Query titleQuery = qp.parse(text);
         TopDocs hits = searcher.search(titleQuery, n);
         return hits;
