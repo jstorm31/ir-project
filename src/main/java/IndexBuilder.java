@@ -104,7 +104,7 @@ public class IndexBuilder {
             content.append("\n");
             content.append(soDocument.getAnswers().get(i));
         }
-        document.add(new TextField("content", content.toString(), Field.Store.NO));
+        document.add(new TextField("content", content.toString(), Field.Store.YES));
 
         return document;
     }
