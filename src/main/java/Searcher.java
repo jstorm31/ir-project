@@ -1,11 +1,11 @@
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import model.SearchResult;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -14,10 +14,11 @@ import java.nio.file.Paths;
 
 public class Searcher {
     IndexSearcher searcher;
+    IndexReader reader;
 
     Searcher(String indexDir) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(indexDir));
-        IndexReader reader = DirectoryReader.open(dir);
+        reader = DirectoryReader.open(dir);
         searcher = new IndexSearcher(reader);
     }
 
@@ -30,10 +31,10 @@ public class Searcher {
      * @throws ParseException
      * @throws IOException
      */
-    public TopDocs search(String text, Integer n) throws ParseException, IOException {
-        QueryParser qp = new QueryParser("content", new StandardAnalyzer());
+    public SearchResult search(String text, Integer n) throws ParseException, IOException {
+        QueryParser qp = new QueryParser("content", new EnglishAnalyzer());
         Query titleQuery = qp.parse(text);
         TopDocs hits = searcher.search(titleQuery, n);
-        return hits;
+        return new SearchResult(hits, titleQuery);
     }
 }
