@@ -10,9 +10,9 @@ public class IndexBuilderConfig {
     private Similarity similarity = new BM25Similarity();
     private Analyzer analyzer = new EnglishAnalyzer();
     private double bufferSize = 120.0;
-    private boolean includeTitle = true;
-    private boolean includeTags = true;
-    private boolean includeAnswers = true;
+    private boolean indexTitle = true;
+    private boolean indexTags = true;
+    private boolean indexAnswers = true;
 
     public IndexBuilderConfig(String path) {
         this.indexDirectoryPath = path;
@@ -31,28 +31,28 @@ public class IndexBuilderConfig {
         this.bufferSize = bufferSize;
     }
 
-    public boolean isIncludeTitle() {
-        return includeTitle;
+    public boolean isIndexTitle() {
+        return indexTitle;
     }
 
-    public void setIncludeTitle(boolean includeTitle) {
-        this.includeTitle = includeTitle;
+    public void setIndexTitle(boolean indexTitle) {
+        this.indexTitle = indexTitle;
     }
 
-    public boolean isIncludeAnswers() {
-        return includeAnswers;
+    public boolean isIndexAnswers() {
+        return indexAnswers;
     }
 
-    public void setIncludeAnswers(boolean includeAnswers) {
-        this.includeAnswers = includeAnswers;
+    public void setIndexAnswers(boolean indexAnswers) {
+        this.indexAnswers = indexAnswers;
     }
 
-    public boolean isIncludeTags() {
-        return includeTags;
+    public boolean isIndexTags() {
+        return indexTags;
     }
 
-    public void setIncludeTags(boolean includeTags) {
-        this.includeTags = includeTags;
+    public void setIndexTags(boolean indexTags) {
+        this.indexTags = indexTags;
     }
 
     public String getIndexDirectoryPath() {

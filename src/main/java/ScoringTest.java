@@ -11,9 +11,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class ScoringTest {
     static int DEFAULT_SEED = 42;
@@ -47,7 +45,6 @@ public class ScoringTest {
             TopDocs hits = searcher.search(titleQuery, this.windowSize);
 
 
-            boolean found = false;
             for (int i = 0; i < hits.scoreDocs.length; i++) {
                 if (hits.scoreDocs[i].doc == docId) {
                     recallCounts[i] += 1;
@@ -80,12 +77,14 @@ public class ScoringTest {
         Similarity similarity = new BM25Similarity();
 
         try {
-            // build index
-            IndexBuilderConfig indexBuilderConfig = new IndexBuilderConfig(indexDirPath);
-            indexBuilderConfig.setIncludeTitle(false);
-            indexBuilderConfig.setSimilarity(similarity);
+            Configuration config = new Configuration();
+            config.setDocDirectoryPath(docDirPath);
+            config.setIndexDirectoryPath(indexDirPath);
+            config.setIndexTitle(false);
+            config.setSimilarity(similarity);
 
-            indexBuilderConfig.buildIndex(docDirPath);
+            // build index
+            config.buildIndex();
 
             // open index
             Directory indexDir = FSDirectory.open(Paths.get(indexDirPath));
