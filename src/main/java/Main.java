@@ -40,7 +40,7 @@ public class Main {
         Scanner command = new Scanner(System.in);
 
         try {
-            RocchioSearcher searcher = new RocchioSearcher(indexDirPath, 1, 1);
+            RocchioSearcher searcher = new RocchioSearcher(indexDirPath, 1, 1.25);
 
             while (true) {
                 System.out.println("\nEnter query:");
@@ -48,8 +48,9 @@ public class Main {
 
                 String query = command.nextLine();
 
+                int queryTermsCount = query.split("\\s+").length;
                 SearchResult searchResult = searcher.search(query, 5);
-                SearchResult pseudoFeedbackSearchResult = searcher.expandQuery(query, 5, query.split("\\s+").length);
+                SearchResult pseudoFeedbackSearchResult = searcher.expandQuery(query, 5, queryTermsCount + 2);
 
                 long stopTime = System.currentTimeMillis();
                 long duration = stopTime - startTime;

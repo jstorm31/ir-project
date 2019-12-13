@@ -119,12 +119,10 @@ public class RocchioSearcher extends Searcher {
             int docOccur = index.getIndexReader().docFreq(new Term("content", term));
             double avgDocLen = index.getIndexReader().getSumTotalTermFreq("content") / docCount;
 
-            double idf = Math.log( (docCount + 1) / (docOccur + 0.5) ); // following Indri
+            double idf = Math.log( (docCount + 1) / (docOccur + 0.5) );
             double tf = docVec.getFeatureWeight(term);
 
-            // TODO: replace this with same scoring model as normal search without feedback
             double weight = (idf * k1 * tf) / (tf + k1 * (1 - b + b * docVec.getLength() / avgDocLen));
-            //System.out.println("Weight: " + weight);
             summedTermVec.addTerm(term, weight);
         }
     }
