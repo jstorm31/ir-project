@@ -90,11 +90,11 @@ public class IndexBuilder {
 
         // Content
         StringBuilder content = new StringBuilder();
-        if (config.isIncludeTitle()) {
+        if (config.isIndexTitle()) {
             content.append(soDocument.getTitle());
             content.append("\n");
         }
-        if (config.isIncludeTags()) {
+        if (config.isIndexTags()) {
             content.append(soDocument.getTags());
             content.append("\n");
         }
