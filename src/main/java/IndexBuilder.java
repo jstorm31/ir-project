@@ -20,22 +20,22 @@ import java.nio.file.*;
 public class IndexBuilder {
     private IndexWriter writer;
 
-    static private Double BUFFER_SIZE = 128.0;
+    private IndexBuilderConfig config;
 
-    public IndexBuilder(String indexDirectoryPath) throws IOException {
-        this(indexDirectoryPath, new BM25Similarity());
-    }
-
-    public IndexBuilder(String indexDirectoryPath, Similarity similarity) throws IOException {
-        Analyzer analyzer = new EnglishAnalyzer();
-        Directory indexDirectory = FSDirectory.open(Paths.get(indexDirectoryPath));
+    public IndexBuilder(IndexBuilderConfig config) throws IOException {
+        this.config = config;
+        Directory indexDirectory = FSDirectory.open(Paths.get(config.getIndexDirectoryPath()));
 
         // Config
-        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
-        writerConfig.setRAMBufferSizeMB(BUFFER_SIZE);
-        writerConfig.setSimilarity(similarity);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(config.getAnalyzer());
+        writerConfig.setRAMBufferSizeMB(this.config.getBufferSize());
+        writerConfig.setSimilarity(this.config.getSimilarity());
 
         writer = new IndexWriter(indexDirectory, writerConfig);
+    }
+
+
+    public IndexBuilder(String indexDirectoryPath) throws IOException {
     }
 
 
@@ -93,12 +93,22 @@ public class IndexBuilder {
         document.add(new TextField("tags", soDocument.getTags(), Field.Store.YES));
 
         // Content
-        String content = soDocument.getTitle() + "\n" + soDocument.getTags() + "\n" + soDocument.getQuestionBody();
-        for (int i = 0; i < soDocument.getAnswers().size(); i++) {
-            String answer = soDocument.getAnswers().get(i);
-            content += "\n" + answer;
+        StringBuilder content = new StringBuilder();
+        if (config.isIncludeTitle()) {
+            content.append(soDocument.getTitle());
+            content.append("\n");
         }
-        document.add(new TextField("content", content, Field.Store.NO));
+        if (config.isIncludeTags()) {
+            content.append(soDocument.getTags());
+            content.append("\n");
+        }
+        content.append(soDocument.getQuestionBody());
+
+        for (int i = 0; i < soDocument.getAnswers().size(); i++) {
+            content.append("\n");
+            content.append(soDocument.getAnswers().get(i));
+        }
+        document.add(new TextField("content", content.toString(), Field.Store.NO));
 
         return document;
     }
