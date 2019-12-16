@@ -85,12 +85,7 @@ public class ScoringTest {
             // build index
             config.buildIndex();
 
-            // open index
-            Searcher searcher = new Searcher(indexDirPath);
-//            Directory indexDir = FSDirectory.open(Paths.get(indexDirPath));
-//            IndexReader indexReader = DirectoryReader.open(indexDir);
-//            IndexSearcher searcher = new IndexSearcher(indexReader);
-//            searcher.setSimilarity(similarity);
+            Searcher searcher = new Searcher(config);
 
             // run test
             ScoringTest test = new ScoringTest(searcher);
