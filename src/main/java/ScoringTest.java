@@ -60,10 +60,10 @@ public class ScoringTest {
             recall[i] = (double) accumulator / numTrials;
         }
 
-        int[] tresholds = {1, 5, 10, 25};
+        int[] thresholds = {1, 5, 10, 25};
 
-        for (int i = 0; i < tresholds.length; i++) {
-            System.out.printf("recall @ %d: %f\n", tresholds[i], recall[tresholds[i]-1]);
+        for (int i = 0; i < thresholds.length; i++) {
+            System.out.printf("recall @ %d: %f\n", thresholds[i], recall[thresholds[i]-1]);
         }
         return recall;
     }
