@@ -4,6 +4,8 @@
 */
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.SearchResult;
 import org.apache.lucene.analysis.TokenStream;
@@ -47,12 +49,26 @@ public class RocchioSearcher extends Searcher {
         this.b = b;
     }
 
-    public SearchResult expandQuery(String text, int fbDocs, int fbTerms) throws IOException, ParseException {
-        TopDocs initialResults = search(text, fbDocs).docs;
+    /**
+     * Manually label relevant documents
+     */
+    public SearchResult expandQuery(String text, List<ScoreDoc> initialResults, List<Integer> relevantDocs, int fbDocs, int fbTerms) throws IOException, ParseException {
+        List<ScoreDoc> relevantScoreDocs = new ArrayList<ScoreDoc>();
 
+        // Filter only relevant documents
+        for (ScoreDoc doc : initialResults) {
+            if (relevantDocs.contains(doc.doc)) {
+                relevantScoreDocs.add(doc);
+            }
+        }
+
+        return expandQuery(text, relevantScoreDocs, fbDocs, fbTerms);
+    }
+
+    public SearchResult expandQuery(String text, List<ScoreDoc> initialResults, int fbDocs, int fbTerms) throws IOException, ParseException {
         FeatureVector summedTermVec = new FeatureVector(null);
 
-        for (ScoreDoc doc : initialResults.scoreDocs) {
+        for (ScoreDoc doc : initialResults) {
             Document document = searcher.doc(doc.doc);
             String docText = document.getField("content").stringValue();
 
