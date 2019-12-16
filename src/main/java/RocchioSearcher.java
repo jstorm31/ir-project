@@ -16,11 +16,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
 
 import helper.FeatureVector;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
-import org.apache.lucene.search.similarities.TFIDFSimilarity;
 
 public class RocchioSearcher extends Searcher {
 
@@ -33,16 +30,16 @@ public class RocchioSearcher extends Searcher {
      * Default parameter values taken from:
      * https://nlp.stanford.edu/IR-book/html/htmledition/the-rocchio71-algorithm-1.html
      */
-    RocchioSearcher(String indexDir) throws IOException {
-        this(indexDir, 1.0, 0.75);
+    RocchioSearcher(Configuration config) throws IOException {
+        this(config, 1.0, 0.75);
     }
 
-    public RocchioSearcher(String indexDir, double alpha, double beta) throws IOException {
-        this(indexDir, alpha, beta, 1.2, 0.75);
+    public RocchioSearcher(Configuration config, double alpha, double beta) throws IOException {
+        this(config, alpha, beta, 1.2, 0.75);
     }
 
-    public RocchioSearcher(String indexDir, double alpha, double beta, double k1, double b) throws IOException {
-        super(indexDir);
+    public RocchioSearcher(Configuration config, double alpha, double beta, double k1, double b) throws IOException {
+        super(config);
         this.alpha = alpha;
         this.beta = beta;
         this.k1 = k1;
