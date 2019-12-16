@@ -1,3 +1,4 @@
+import model.SearchResult;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -18,11 +19,11 @@ public class ScoringTest {
     // how many documents to consider
     static int DEFAULT_WINDOW_SIZE = 100;
 
-    private IndexSearcher searcher;
+    private Searcher searcher;
     private int randomSeed;
     private int windowSize;
 
-    ScoringTest(IndexSearcher searcher) {
+    ScoringTest(Searcher searcher) {
         this.searcher = searcher;
 
         this.randomSeed = DEFAULT_SEED;
@@ -30,7 +31,7 @@ public class ScoringTest {
     }
 
     public double[] run(int numTrials) throws Exception {
-        QueryParser qp = new QueryParser("content", new EnglishAnalyzer());
+        QueryParser qp = this.searcher.queryParser();
 
         Random random = new Random(this.randomSeed);
 
@@ -38,15 +39,13 @@ public class ScoringTest {
 
         for (int trial = 0; trial < numTrials; trial++) {
             int docId = random.nextInt(searcher.getIndexReader().numDocs());
-            Document document = searcher.doc(docId);
-
+            Document document = searcher.getIndexReader().document(docId);
             Query titleQuery = qp.parse(qp.escape(document.get("title")));
+            SearchResult result = searcher.runQuery(titleQuery, this.windowSize);
 
-            TopDocs hits = searcher.search(titleQuery, this.windowSize);
 
-
-            for (int i = 0; i < hits.scoreDocs.length; i++) {
-                if (hits.scoreDocs[i].doc == docId) {
+            for (int i = 0; i < result.docs.scoreDocs.length; i++) {
+                if (result.docs.scoreDocs[i].doc == docId) {
                     recallCounts[i] += 1;
                     break;
                 }
@@ -87,10 +86,11 @@ public class ScoringTest {
             config.buildIndex();
 
             // open index
-            Directory indexDir = FSDirectory.open(Paths.get(indexDirPath));
-            IndexReader indexReader = DirectoryReader.open(indexDir);
-            IndexSearcher searcher = new IndexSearcher(indexReader);
-            searcher.setSimilarity(similarity);
+            Searcher searcher = new Searcher(indexDirPath);
+//            Directory indexDir = FSDirectory.open(Paths.get(indexDirPath));
+//            IndexReader indexReader = DirectoryReader.open(indexDir);
+//            IndexSearcher searcher = new IndexSearcher(indexReader);
+//            searcher.setSimilarity(similarity);
 
             // run test
             ScoringTest test = new ScoringTest(searcher);

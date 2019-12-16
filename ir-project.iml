@@ -15,5 +15,6 @@
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:8.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:8.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.unbescape:unbescape:1.1.6.RELEASE" level="project" />
+    <orderEntry type="library" name="ir-utils-0.2.0-SNAPSHOT" level="project" />
   </component>
 </module>

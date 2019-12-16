@@ -13,13 +13,16 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public class Searcher {
-    IndexSearcher searcher;
-    IndexReader reader;
+    protected Configuration config;
+    protected IndexSearcher searcher;
+    protected IndexReader reader;
 
-    Searcher(String indexDir) throws IOException {
-        Directory dir = FSDirectory.open(Paths.get(indexDir));
+    Searcher(Configuration config) throws IOException {
+        this.config = config;
+        Directory dir = FSDirectory.open(Paths.get(config.getIndexDirectoryPath()));
         reader = DirectoryReader.open(dir);
         searcher = new IndexSearcher(reader);
+        searcher.setSimilarity(config.getSimilarity());
     }
 
     /**
@@ -32,9 +35,20 @@ public class Searcher {
      * @throws IOException
      */
     public SearchResult search(String text, Integer n) throws ParseException, IOException {
-        QueryParser qp = new QueryParser("content", new EnglishAnalyzer());
-        Query titleQuery = qp.parse(text);
-        TopDocs hits = searcher.search(titleQuery, n);
-        return new SearchResult(hits, titleQuery);
+        Query titleQuery = queryParser().parse(text);
+        return runQuery(titleQuery, n);
+    }
+
+    public QueryParser queryParser() {
+        return  new QueryParser("content", config.getAnalyzer());
+    }
+
+    public SearchResult runQuery(Query query, Integer n) throws IOException {
+        TopDocs hits = searcher.search(query, n);
+        return new SearchResult(hits, query);
+    }
+
+    public IndexReader getIndexReader() {
+        return this.reader;
     }
 }
