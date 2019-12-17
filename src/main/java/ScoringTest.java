@@ -13,6 +13,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.nio.file.Paths;
 import java.util.Random;
+import java.util.Scanner;
 
 public class ScoringTest {
     static int DEFAULT_SEED = 42;
@@ -69,8 +70,8 @@ public class ScoringTest {
     }
 
     public static void main(String[] args) {
-        String docDirPath = "/var/run/media/iasoon/Elements/posts_minimal/";
-        String indexDirPath = "/var/run/media/iasoon/Elements/index_minimal";
+        String docDirPath = "/Users/jstorm31/stackoverflow_xs";
+        String indexDirPath = "/Users/jstorm31/stackoverflow_index";
 
         // Similarity similarity = new DFRSimilarity(new BasicModelG(), new AfterEffectL(), new NormalizationH1());
         Similarity similarity = new BM25Similarity();
@@ -83,7 +84,14 @@ public class ScoringTest {
             config.setSimilarity(similarity);
 
             // build index
-            config.buildIndex();
+            Scanner command = new Scanner(System.in);
+
+            System.out.println("Do you wish to build the index? [y/n]");
+            String buildIndex = command.nextLine();
+
+            if (buildIndex.equalsIgnoreCase("y")) {
+                config.buildIndex();
+            }
 
             Searcher searcher = new Searcher(config);
 
