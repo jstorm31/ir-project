@@ -2,7 +2,6 @@ import model.SearchResult;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.ScoreDoc;
-import sun.security.krb5.Config;
 
 import java.io.IOException;
 import java.util.ArrayList;

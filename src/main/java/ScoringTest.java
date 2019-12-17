@@ -1,21 +1,14 @@
 import model.SearchResult;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.*;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.StringJoiner;
 import java.util.stream.DoubleStream;
+import java.util.Scanner;
+
 
 public class ScoringTest {
     static int DEFAULT_SEED = 42;
@@ -68,7 +61,6 @@ public class ScoringTest {
         for (int i = 0; i < thresholds.length; i++) {
             System.out.printf("recall @ %d: %f\n", thresholds[i], recall[thresholds[i]-1]);
         }
-
         return recall;
     }
 
@@ -92,7 +84,14 @@ public class ScoringTest {
             config.setSimilarity(similarity);
 
             // build index
-            config.buildIndex();
+            Scanner command = new Scanner(System.in);
+
+            System.out.println("Do you wish to build the index? [y/n]");
+            String buildIndex = command.nextLine();
+
+            if (buildIndex.equalsIgnoreCase("y")) {
+                config.buildIndex();
+            }
 
             Searcher searcher = new Searcher(config);
 
