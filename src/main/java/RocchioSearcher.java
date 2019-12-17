@@ -5,6 +5,7 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import model.SearchResult;
@@ -109,9 +110,17 @@ public class RocchioSearcher extends Searcher {
         for (String term : relDocTermVec.getFeatures()) {
             expandedQuery.append(term + "^" + relDocTermVec.getFeatureWeight(term) + " ");
         }
-        System.out.println("Expanded query: " + expandedQuery.toString());
 
         return search(expandedQuery.toString(), fbDocs);
+    }
+
+    /**
+     * Perform search for testing / benchmarking purposes
+     */
+    public SearchResult runTestSearch(String text, Integer n) throws ParseException, IOException {
+        SearchResult searchResult = search(text, n);
+        List<ScoreDoc> scoreDocs = new ArrayList<ScoreDoc>(Arrays.asList(searchResult.docs.scoreDocs));
+        return expandQuery(text, scoreDocs, config.getFeedbackRelevantDocs(), config.getFeedbackExpansionTerms());
     }
 
     private void parseText(String text, FeatureVector vector) throws IOException {

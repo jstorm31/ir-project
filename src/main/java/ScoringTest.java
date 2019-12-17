@@ -16,11 +16,13 @@ public class ScoringTest {
     static int DEFAULT_WINDOW_SIZE = 100;
 
     private Searcher searcher;
+    private Configuration config;
     private int randomSeed;
     private int windowSize;
 
-    ScoringTest(Searcher searcher) {
+    ScoringTest(Searcher searcher, Configuration config) {
         this.searcher = searcher;
+        this.config = config;
 
         this.randomSeed = DEFAULT_SEED;
         this.windowSize = DEFAULT_WINDOW_SIZE;
@@ -36,9 +38,11 @@ public class ScoringTest {
         for (int trial = 0; trial < numTrials; trial++) {
             int docId = random.nextInt(searcher.getIndexReader().numDocs());
             Document document = searcher.getIndexReader().document(docId);
-            Query titleQuery = qp.parse(qp.escape(document.get("title")));
-            SearchResult result = searcher.runQuery(titleQuery, this.windowSize);
+            String titleQuery = qp.escape(document.get("title"));
 
+            config.setFeedbackRelevantDocs(windowSize);
+            config.setFeedbackExpansionTerms(titleQuery.split(" ").length);
+            SearchResult result = searcher.runTestSearch(titleQuery, this.windowSize);
 
             for (int i = 0; i < result.docs.scoreDocs.length; i++) {
                 if (result.docs.scoreDocs[i].doc == docId) {
@@ -65,8 +69,11 @@ public class ScoringTest {
     }
 
     public static void main(String[] args) {
-        String docDirPath = "/var/run/media/iasoon/Elements/posts_minimal/";
-        String indexDirPath = "/var/run/media/iasoon/Elements/index_minimal";
+        //String docDirPath = "/var/run/media/iasoon/Elements/posts_minimal/";
+        //String indexDirPath = "/var/run/media/iasoon/Elements/index_minimal";
+        String docDirPath = "/Users/jstorm31/stackoverflow_xs";
+        String indexDirPath = "/Users/jstorm31/stackoverflow_index";
+        Scanner command = new Scanner(System.in);
 
         // Similarity similarity = new ClassicSimilarity();
         Similarity similarity = new BM25Similarity(1.2f, 0.25f);
@@ -84,26 +91,29 @@ public class ScoringTest {
             config.setSimilarity(similarity);
 
             // build index
-            Scanner command = new Scanner(System.in);
-
             System.out.println("Do you wish to build the index? [y/n]");
-            String buildIndex = command.nextLine();
-
-            if (buildIndex.equalsIgnoreCase("y")) {
+            String input = command.nextLine();
+            if (input.equalsIgnoreCase("y")) {
                 config.buildIndex();
             }
 
-            Searcher searcher = new Searcher(config);
+            System.out.println("Run for normal search (n) or psudo-relevant feedback search (p)? [n/p]");
+            input = command.nextLine();
+            Searcher searcher = null;
+            if (input.equalsIgnoreCase("p")) {
+                searcher = new RocchioSearcher(config);
+            } else {
+                searcher = new Searcher(config);
+            }
 
             // run test
-            ScoringTest test = new ScoringTest(searcher);
+            ScoringTest test = new ScoringTest(searcher, config);
             double[] recall = test.run(5000);
 
             // Print results
             StringJoiner sj = new StringJoiner(",");
             DoubleStream.of(recall).forEach(x -> sj.add(String.valueOf(x)));
             System.out.println(sj.toString());
-
         } catch (Exception e) {
             e.printStackTrace();
         }

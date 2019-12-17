@@ -47,6 +47,13 @@ public class Searcher {
         return new SearchResult(hits, query);
     }
 
+    /**
+     * Perform search for testing / benchmarking purposes
+     */
+    public SearchResult runTestSearch(String text, Integer n) throws ParseException, IOException {
+        return search(text, n);
+    }
+
     public IndexReader getIndexReader() {
         return this.reader;
     }

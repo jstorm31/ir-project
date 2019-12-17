@@ -64,7 +64,7 @@ public class Main {
                     System.out.println(String.format(d.get("name")) + "(" + sd.score + "): " + String.format(d.get("title")) + "\"");
                 }
 
-                System.out.println("\nDo you wish to search for a new query (n), add a feedback manually to the current one (m) or use pseudo feedback(f)? [n/f]");
+                System.out.println("\nDo you wish to search for a new query (n), add a feedback manually to the current one (m) or use pseudo feedback(f)? [n/m/f]");
                 String input = command.nextLine();
                 if (input.equalsIgnoreCase("n")) {
                     continue;

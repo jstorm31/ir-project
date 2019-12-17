@@ -16,6 +16,9 @@ public class Configuration {
     private String docDirectoryPath;
     private String indexDirectoryPath;
 
+    private int feedbackRelevantDocs = 5;
+    private int feedbackExpansionTerms = 5;
+
     public IndexBuilderConfig indexBuilderConfig() {
         IndexBuilderConfig indexBuilderConfig = new IndexBuilderConfig(this.indexDirectoryPath);
         indexBuilderConfig.setSimilarity(getSimilarity());
@@ -87,5 +90,21 @@ public class Configuration {
 
     public void setIndexDirectoryPath(String indexDirectoryPath) {
         this.indexDirectoryPath = indexDirectoryPath;
+    }
+
+    public int getFeedbackRelevantDocs() {
+        return feedbackRelevantDocs;
+    }
+
+    public void setFeedbackRelevantDocs(int feedbackRelevantDocs) {
+        this.feedbackRelevantDocs = feedbackRelevantDocs;
+    }
+
+    public int getFeedbackExpansionTerms() {
+        return feedbackExpansionTerms;
+    }
+
+    public void setFeedbackExpansionTerms(int feedbackExpansionTerms) {
+        this.feedbackExpansionTerms = feedbackExpansionTerms;
     }
 }
