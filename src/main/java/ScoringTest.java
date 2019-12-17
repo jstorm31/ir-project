@@ -12,7 +12,10 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.StringJoiner;
+import java.util.stream.DoubleStream;
 
 public class ScoringTest {
     static int DEFAULT_SEED = 42;
@@ -65,6 +68,7 @@ public class ScoringTest {
         for (int i = 0; i < thresholds.length; i++) {
             System.out.printf("recall @ %d: %f\n", thresholds[i], recall[thresholds[i]-1]);
         }
+
         return recall;
     }
 
@@ -72,8 +76,13 @@ public class ScoringTest {
         String docDirPath = "/var/run/media/iasoon/Elements/posts_minimal/";
         String indexDirPath = "/var/run/media/iasoon/Elements/index_minimal";
 
+        // Similarity similarity = new ClassicSimilarity();
+        Similarity similarity = new BM25Similarity(1.2f, 0.25f);
         // Similarity similarity = new DFRSimilarity(new BasicModelG(), new AfterEffectL(), new NormalizationH1());
-        Similarity similarity = new BM25Similarity();
+        // Similarity similarity = new IBSimilarity(new DistributionLL(), new LambdaDF(), new NormalizationH1());
+        // Similarity similarity = new LMDirichletSimilarity();
+        // Similarity similarity = new LMJelinekMercerSimilarity(0.1f);
+        // Similarity similarity = new DFISimilarity(new IndependenceStandardized());
 
         try {
             Configuration config = new Configuration();
@@ -89,7 +98,13 @@ public class ScoringTest {
 
             // run test
             ScoringTest test = new ScoringTest(searcher);
-            test.run(5000);
+            double[] recall = test.run(5000);
+
+            // Print results
+            StringJoiner sj = new StringJoiner(",");
+            DoubleStream.of(recall).forEach(x -> sj.add(String.valueOf(x)));
+            System.out.println(sj.toString());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
