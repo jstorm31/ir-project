@@ -52,7 +52,7 @@ public class Main {
 
                 String query = command.nextLine();
                 int queryTermsCount = query.split("\\s+").length;
-                SearchResult searchResult = searcher.search(query, 5);
+                SearchResult searchResult = searcher.search(query, 10);
 
                 long stopTime = System.currentTimeMillis();
                 long duration = stopTime - startTime;
@@ -76,9 +76,9 @@ public class Main {
 
                 if (input.equalsIgnoreCase("m")) {
                     List<Integer> relevantDocs = chooseRelevantDocuments();
-                    feedbackSearchResult = searcher.expandQuery(query, scoreDocs, relevantDocs, 5, queryTermsCount + 2);
+                    feedbackSearchResult = searcher.expandQuery(query, scoreDocs, relevantDocs, 10, queryTermsCount);
                 } else if (input.equalsIgnoreCase("f")) {
-                    feedbackSearchResult = searcher.expandQuery(query, scoreDocs, 5, queryTermsCount + 2);
+                    feedbackSearchResult = searcher.expandQuery(query, scoreDocs, 10, queryTermsCount);
                 } else {
                     System.out.println("Invalid input");
                     continue;

@@ -1,7 +1,7 @@
 import model.SearchResult;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.similarities.*;
 
 import java.util.Random;
@@ -39,10 +39,16 @@ public class ScoringTest {
             int docId = random.nextInt(searcher.getIndexReader().numDocs());
             Document document = searcher.getIndexReader().document(docId);
             String titleQuery = qp.escape(document.get("title"));
-
             config.setFeedbackRelevantDocs(windowSize);
-            config.setFeedbackExpansionTerms(titleQuery.split(" ").length);
-            SearchResult result = searcher.runTestSearch(titleQuery, this.windowSize);
+            config.setFeedbackExpansionTerms(titleQuery.split(" ").length + 4   );
+            SearchResult result = null;
+
+            try {
+                result = searcher.runTestSearch(titleQuery, this.windowSize);
+            } catch (ParseException e) {
+                System.out.println("Skipping query \"" + titleQuery + "\" due to raised ParseException.");
+                continue;
+            }
 
             for (int i = 0; i < result.docs.scoreDocs.length; i++) {
                 if (result.docs.scoreDocs[i].doc == docId) {
@@ -108,7 +114,7 @@ public class ScoringTest {
 
             // run test
             ScoringTest test = new ScoringTest(searcher, config);
-            double[] recall = test.run(5000);
+            double[] recall = test.run(1000);
 
             // Print results
             StringJoiner sj = new StringJoiner(",");
